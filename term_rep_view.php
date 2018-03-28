@@ -124,7 +124,7 @@ switch($action){
 				$sql = "SELECT distinct (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)) as total from ".DB_PREFIX."marking as mrk WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND mrk.ci_status = '1' ".$add_syndicate." group by mrk.student_id ORDER BY total desc"; //AND impr.status = '1'
 			}
 		}//else if
-		
+		/*
 		$numberArray = $dbObj->selectDataObj($sql);
 		
 		if(!empty($numberArray)){
@@ -134,6 +134,155 @@ switch($action){
 				$i++; 
 			}//foreach
 		}//if
+		*/
+		
+		
+		//Find Student info  -- the student who are assigned in this same term//Syndicate
+		if($cur_user_group_id == '5'){
+			if($_POST['submit'] == 'Sort By Position'){
+				if(!empty($imp_forwarded)){
+					$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)+impr.ds_impr_weight) as total from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr WHERE impr.student_id = mrk.student_id AND mrk.course_id = '".$course_id."' AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.term_id = '".$term_id."' AND impr.syndicate_id = '".$syndicate_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND mrk.ci_status = '1' AND impr.status = '1' group by mrk.student_id ORDER BY total desc";
+				}else{
+					$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)) as total from ".DB_PREFIX."marking as mrk WHERE mrk.syndicate_id = '".$syndicate_id."' AND mrk.term_id = '".$term_id."' AND mrk.course_id = '".$course_id."' AND mrk.status = '1' AND mrk.ci_status = '1' group by mrk.student_id ORDER BY total desc";
+				}
+			}else{
+				$sql = "SELECT mrk.student_id FROM ".DB_PREFIX."marking as mrk, ".DB_PREFIX."student as std WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND mrk.student_id = std.id GROUP BY mrk.student_id ORDER BY std.student_id";
+			}//else 
+		}else if($cur_user_group_id == '4'){
+			if($total_forwarded == $totalSyndicate){
+				if($_POST['submit'] == 'Sort By Position'){
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)+impr.ds_impr_weight) as total from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND mrk.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND mrk.ci_status = '1' AND impr.status = '1' group by mrk.student_id ORDER BY total desc";
+					}else{
+						$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)+impr.ds_impr_weight) as total from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND mrk.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.term_id = '".$term_id."' AND impr.syndicate_id = '".$syndicate_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND mrk.ci_status = '1' AND impr.status = '1' group by mrk.student_id ORDER BY total desc";
+					}//else 
+				}else if($_POST['submit'] == 'Sort By C/N'){
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr, ".DB_PREFIX."student as std WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.status = '1' AND impr.status = '1' AND mrk.student_id = std.id AND impr.student_id = std.id group by mrk.student_id ORDER BY std.student_id asc";
+					}else{
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr, ".DB_PREFIX."student as std WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND impr.syndicate_id = '".$syndicate_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND impr.status = '1' AND mrk.student_id = std.id AND impr.student_id = std.id group by mrk.student_id ORDER BY std.student_id asc";
+					}//else 
+				}else{
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr, ".DB_PREFIX."syndicate as syn WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.status = '1' AND impr.status = '1' AND syn.id = mrk.syndicate_id AND syn.id = impr.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
+					}else{
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."impression_marking as impr WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND impr.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND impr.status = '1' group by mrk.student_id ORDER BY mrk.student_id asc";
+					}//else 
+				}//else
+			}else{
+				if($_POST['submit'] == 'Sort By Position'){
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)) as total from ".DB_PREFIX."marking as mrk WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND mrk.ci_status = '1' group by mrk.student_id ORDER BY total desc";
+					}else{
+						$sql = "SELECT mrk.student_id, (sum(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)) as total from ".DB_PREFIX."marking as mrk  WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND mrk.ci_status = '1' group by mrk.student_id ORDER BY total desc";
+					}//else 
+				}else if($_POST['submit'] == 'Sort By C/N'){
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."student as std WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND mrk.student_id = std.id group by mrk.student_id ORDER BY std.student_id asc";
+					}else{
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."student as std WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' AND mrk.student_id = std.id group by mrk.student_id ORDER BY std.student_id asc";
+					}//else 
+				}else{
+					if($syndicate_id == '0'){
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."syndicate as syn WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND syn.id = mrk.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
+					}else{
+						$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.syndicate_id = '".$syndicate_id."' AND mrk.status = '1' group by mrk.student_id ORDER BY mrk.student_id asc";
+					}//else 
+				}//else
+			}//else
+		}//else if
+		
+
+		$studentArr = $dbObj->selectDataObj($sql);
+		$studentArrForArray = $dbObj->selectDataObj($sql);
+		
+		
+		/*********************************New Array generate***************************/
+		
+		$NewnumberArray = '';
+		$totalexrsql = "select exr.id, exr.name,exr.join_course, exr.weight, exr.air_weight, exr.navy_weight, exr.mark from ".DB_PREFIX."exercise as exr, ".DB_PREFIX."exercise_to_term as ett where ett.term_id = ".$term_id." AND ett.exercise_id = exr.id order by exr.name asc";
+		
+		$totalExerciseArforCount = $dbObj->selectDataObj($totalexrsql);
+		
+		
+		foreach($studentArrForArray as $student){
+		
+				$total_exr_weight_new = 0;
+				
+				foreach($totalExerciseArforCount as $exercise){
+									
+					//Find student's marks of this term
+					//$mark_sql = "select * from ".DB_PREFIX."marking WHERE term_id = '".$term_id."' AND course_id = '".$course_id."' AND student_id = '".$student->student_id."' AND exercise_id = '".$exercise->id."' AND status = '1' order by id desc";
+					$mark_sql = "select * from ".DB_PREFIX."marking WHERE exercise_id = '".$exercise->id."' AND student_id = '".$student->student_id."' AND term_id = '".$term_id."' AND course_id = '".$course_id."' AND status = '1' AND ci_status = '1' order by id desc";
+					
+					$markArrResult = $dbObj->selectDataObj($mark_sql);
+					
+					$array_count_mark = $markArrResult[0];
+					
+					$exr_total_weight = $array_count_mark->ds_marking+$array_count_mark->si_mod_marking+$array_count_mark->ci_mod_marking;
+					
+					//Find Exercise Info
+					$exrsql = "select * from ".DB_PREFIX."exercise WHERE id = '".$exercise->id."'";
+					$count_exrArr = $dbObj->selectDataObj($exrsql);
+					
+					$exercise = $count_exrArr[0];
+						$joinExercise = $exercise->join_course;
+						if($joinExercise == 1 && $cur_user_wing_id == 2){
+							$exercise->weight = $exercise->air_weight;
+						}else if($joinExercise == 1 && $cur_user_wing_id == 3){
+							$exercise->weight = $exercise->navy_weight;
+						}else if($joinExercise == 1 && $cur_user_wing_id == 1){
+							$exercise->weight = $exercise->weight;
+						}else{
+							$exercise->weight = $exercise->weight;
+						}
+					$exrWeight = $exercise->weight;
+					
+					
+					$from_ds_weight = ($array_count_mark->ds_marking*$exercise->weight)/100;
+					$converted_exr_weight = $from_ds_weight+$array_count_mark->si_student_weight+$array_count_mark->ci_student_weight;
+					$total_exr_weight_new += $converted_exr_weight;
+					
+					if(($cur_user_group_id == 4) && ($total_forwarded == $totalSyndicate)){
+						//Find term impression mark of Student
+						$sql = "select * from ".DB_PREFIX."impression_marking WHERE student_id = '".$student->student_id."' AND term_id = '".$term_id."' AND course_id = '".$course_id."' AND status = '1'";
+						$stuImprMarkArry = $dbObj->selectDataObj($sql);
+						$stuImprMark = $stuImprMarkArry[0];
+						
+						$stu_ds_impression_mark = $stuImprMark->ds_impr_marking;
+						$converted_ds_impr_mark = ($stu_ds_impression_mark*$ds_impr_mark)/100;
+					}else if(($cur_user_group_id == 5) && ($forwarded == 'true')){
+						//Find term impression mark of Student
+						$sql = "select * from ".DB_PREFIX."impression_marking WHERE student_id = '".$student->student_id."' AND term_id = '".$term_id."' AND course_id = '".$course_id."'";
+						$stuImprMarkArry = $dbObj->selectDataObj($sql);
+						$stuImprMark = $stuImprMarkArry[0];
+						$stu_ds_impression_mark = $stuImprMark->ds_impr_marking;
+						$converted_ds_impr_mark = ($stu_ds_impression_mark*$ds_impr_mark)/100;
+
+					}
+					
+					
+					
+				}
+				$total_number = $total_exr_weight_new+$converted_ds_impr_mark;
+				
+				$NewnumberArray[] = $total_number;
+		
+		}
+		rsort($NewnumberArray);
+		
+		
+		if(!empty($NewnumberArray)){
+			$i = 0;
+			foreach($NewnumberArray as $item){
+				$numberArray[$i]->total = $item;
+				$numberArray[$i]->position = $i+1;
+				$i++; 
+			}
+		}
+		
+		
+		/*********************************New Array generate***************************/
 		
 		$action = 'view';
 		$msg = $_REQUEST['msg'];
@@ -385,7 +534,8 @@ switch($action){
 				<?php echo findGrade($total_percent); ?>
 			</td>
 			<td align="center">
-				<?php echo findPosition($numberArray, $total_number); ?>
+				<?php 
+				echo findPosition($numberArray, $total_number); ?>
 			</td>
 		</tr>
 		</tr>

@@ -222,7 +222,7 @@ require_once("templates/top_menu.php");
 require_once("templates/left_menu.php");
 
 
-					/*********************************New Array generate***************************/
+		/*********************************New Array generate***************************/
 		
 		$NewnumberArray = '';
 		$totalexrsql = "select exr.id, exr.name,exr.join_course, exr.weight, exr.air_weight, exr.navy_weight, exr.mark from ".DB_PREFIX."exercise as exr, ".DB_PREFIX."exercise_to_term as ett where ett.term_id = ".$term_id." AND ett.exercise_id = exr.id order by exr.name asc";
@@ -1041,6 +1041,8 @@ require_once("templates/left_menu.php");
 								</td>
 								<td align="center">
 									<?php 
+									echo '<pre>';
+									print_r($numberArrayForCourse);
 									echo findPosition($numberArrayForCourse, $student_total_weight);
 											$arr[$sl]['position'] = findPosition($numberArrayForCourse, $student_total_weight);
 									?>

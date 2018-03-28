@@ -492,7 +492,7 @@ require_once("templates/left_menu.php");
 								<?php 
 									if($cur_user_group_id == 4){ ?>
 										<a href="download_reports.php"><img src="images/xls.ico" title="Download Report in MS-Excel Format" /></a>
-										<a href="download.php?action=getpdf"><img src="images/pdf.png" title="Download Report in PDF Format" height="16" width="16" /></a>
+										<!--<a href="download.php?action=getpdf"><img src="images/pdf.png" title="Download Report in PDF Format" height="16" width="16" /></a>-->
 										<?php }
 										if($syndicate_id == 0 || $syndicate_id == ''){
 													$syndt = '';

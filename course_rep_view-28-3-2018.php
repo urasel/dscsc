@@ -248,20 +248,23 @@ switch($action){
 		
 }//switch
 
+
 /*********************************New Array generate***************************/
 		
 		$NewnumberArray = '';
-		$totalexrsql = "select exr.id, exr.name,exr.join_course, exr.weight, exr.air_weight, exr.navy_weight, exr.mark from ".DB_PREFIX."exercise as exr, ".DB_PREFIX."exercise_to_term as ett where ett.term_id = ".$term_id." AND ett.exercise_id = exr.id order by exr.name asc";
+		$totalexrsql = "select exr.id, exr.name,exr.join_course, exr.weight, exr.air_weight, exr.navy_weight, exr.mark from ".DB_PREFIX."exercise as exr, ".DB_PREFIX."exercise_to_term as ett where ett.term_id = ".$term->id." AND ett.exercise_id = exr.id order by exr.name asc";
 		
 		$totalExerciseArforCount = $dbObj->selectDataObj($totalexrsql);
 		
 		//Find Student info  -- the student who are assigned in this same term//Syndicate
 		
-		$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."syndicate as syn WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND syn.id = mrk.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
+		$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."syndicate as syn WHERE mrk.course_id = '".$course_id."' AND mrk.status = '1' AND syn.id = mrk.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
+		
 		
 		$studentArrForArray = $dbObj->selectDataObj($sql);
+	
 		
-		/* Aggregate Part Start*/
+																/* Aggregate Part Start*/
 																
 		$NewnumberArrayTotalTerm = '';												
 		$studentTotalTermMarkArray = '';
@@ -326,6 +329,7 @@ switch($action){
 									
 									
 									
+									
 						
 					}//Foreach Exercise End
 					
@@ -357,122 +361,6 @@ switch($action){
 												/* Aggregate Part End*/
 		
 		/*********************************New Array generate End***************************/
-		
-		
-		
-/*NEW TEST Case for Array Start */
-		$termWiseArray = '';
-		$sql = "SELECT * FROM ".DB_PREFIX."term where course_id = '".$course_id."' ORDER BY order_id ASC";
-		$termArr = $dbObj->selectDataObj($sql);
-		$terwisestudenttotalmrk = '';
-		foreach($termArr as $term){
-			
-			$ds_imp_term_sql = "select * from ".DB_PREFIX."term WHERE id = '".$term->id."'";
-			$termInfoArry = $dbObj->selectDataObj($ds_imp_term_sql);
-			$termInfo = $termInfoArry[0];
-			$ds_impr_mark = $termInfo->ds_impr_mark;
-			
-				$sql = "select * from ".DB_PREFIX."exercise as exr,  ".DB_PREFIX."exercise_to_term as ett WHERE ett.exercise_id = exr.id AND ett.term_id = '".$term->id."'";
-			$NewnumberArray = '';
-			$totalexrsql = "select exr.id, exr.name,exr.join_course, exr.weight, exr.air_weight, exr.navy_weight, exr.mark from ".DB_PREFIX."exercise as exr, ".DB_PREFIX."exercise_to_term as ett where ett.term_id = ".$term->id." AND ett.exercise_id = exr.id order by exr.name asc";
-			
-			$totalExerciseArforCount = $dbObj->selectDataObj($totalexrsql);
-			
-			
-			//$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."syndicate as syn WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term->id."' AND mrk.status = '1' AND syn.id = mrk.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
-			
-			$sql = "SELECT mrk.student_id FROM dscsc_marking AS mrk, dscsc_impression_marking AS impr, dscsc_syndicate AS syn 
-			WHERE impr.student_id = mrk.student_id AND impr.course_id = '".$course_id."' AND impr.term_id = '".$term->id."' AND mrk.status = '1' 
-			AND impr.status = '1' AND syn.id = mrk.syndicate_id AND syn.id = impr.syndicate_id GROUP BY mrk.student_id 
-			ORDER BY syn.name ASC, mrk.student_id asc";
-			
-			
-		
-			$studentArrForArray = $dbObj->selectDataObj($sql);
-			
-			foreach($studentArrForArray as $student){
-			
-					$total_exr_weight_new = 0;
-					$array_count_mark = '';
-					$exr_total_weight = '';
-					
-					foreach($totalExerciseArforCount as $exercise){
-						
-						$mark_sql = "select * from ".DB_PREFIX."marking WHERE exercise_id = '".$exercise->id."' AND student_id = '".$student->student_id."' AND term_id = '".$term->id."' AND course_id = '".$course_id."' AND status = '1' AND ci_status = '1' order by id desc";
-						
-						$markArrResult = $dbObj->selectDataObj($mark_sql);
-						
-						$array_count_mark = $markArrResult[0];
-						
-						$exr_total_weight = $array_count_mark->ds_marking+$array_count_mark->si_mod_marking+$array_count_mark->ci_mod_marking;
-						
-						//Find Exercise Info
-						$exrsql = "select * from ".DB_PREFIX."exercise WHERE id = '".$exercise->id."'";
-						$count_exrArr = $dbObj->selectDataObj($exrsql);
-						
-						$exercise = $count_exrArr[0];
-							$joinExercise = $exercise->join_course;
-							if($joinExercise == 1 && $cur_user_wing_id == 2){
-								$exercise->weight = $exercise->air_weight;
-							}else if($joinExercise == 1 && $cur_user_wing_id == 3){
-								$exercise->weight = $exercise->navy_weight;
-							}else if($joinExercise == 1 && $cur_user_wing_id == 1){
-								$exercise->weight = $exercise->weight;
-							}else{
-								$exercise->weight = $exercise->weight;
-							}
-						$exrWeight = $exercise->weight;
-						
-						
-						$from_ds_weight = ($array_count_mark->ds_marking*$exercise->weight)/100;
-						$converted_exr_weight = $from_ds_weight+$array_count_mark->si_student_weight+$array_count_mark->ci_student_weight;
-						$total_exr_weight_new += $converted_exr_weight;
-						
-						if(($cur_user_group_id == 4) && ($total_forwarded == $totalSyndicate)){
-							//Find term impression mark of Student
-							$sql = "select * from ".DB_PREFIX."impression_marking WHERE student_id = '".$student->student_id."' AND term_id = '".$term->id."' AND course_id = '".$course_id."' AND status = '1'";
-							$stuImprMarkArry = $dbObj->selectDataObj($sql);
-							$stuImprMark = $stuImprMarkArry[0];
-							
-							$stu_ds_impression_mark = $stuImprMark->ds_impr_marking;
-							$converted_ds_impr_mark = ($stu_ds_impression_mark*$ds_impr_mark)/100;
-						}else if(($cur_user_group_id == 5) && ($forwarded == 'true')){
-							//Find term impression mark of Student
-							$sql = "select * from ".DB_PREFIX."impression_marking WHERE student_id = '".$student->student_id."' AND term_id = '".$term->id."' AND course_id = '".$course_id."'";
-							$stuImprMarkArry = $dbObj->selectDataObj($sql);
-							$stuImprMark = $stuImprMarkArry[0];
-							$stu_ds_impression_mark = $stuImprMark->ds_impr_marking;
-							$converted_ds_impr_mark = ($stu_ds_impression_mark*$ds_impr_mark)/100;
-
-						}
-						
-						
-						
-					}
-					$total_number = $total_exr_weight_new+$converted_ds_impr_mark;
-					
-					$NewnumberArray[] = $total_number;
-					$terwisestudenttotalmrk[$student->student_id] = $terwisestudenttotalmrk[$student->student_id] + $total_number;
-			
-			}
-			rsort($NewnumberArray);
-			
-			
-			if(!empty($NewnumberArray)){
-				$i = 0;
-				$numberArray = '';
-				foreach($NewnumberArray as $item){
-					$numberArray[$i]->total = $item;
-					$numberArray[$i]->position = $i+1;
-					$i++; 
-				}
-			}
-			$termWiseArray[$term->id] = $numberArray;
-			
-		}
-		//print_r($termWiseArray);exit;
-		
-		/*NEW TEST Case for Array End */
 
 ?>
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -790,7 +678,7 @@ switch($action){
 				<?php echo findGrade($term_percent); ?>
 			</td>
 			<td align="center">
-				<?php echo findPosition($termWiseArray[$term->id], $std_term_total_weight); ?>
+				<?php echo findPosition($numberArrayForTerm, $std_term_total_weight); ?>
 			</td>
 <?php }//foreach -- termArr
 		if(empty($term_id)){
@@ -827,8 +715,7 @@ switch($action){
 			</td>
 			<td align="center">
 				<?php 
-				
-				echo findPosition($numberArrayForTotalTerm, $term_total_weight); ?>
+				echo findPosition($numberArrayForCourse, $student_total_weight); ?>
 			</td>
 <?php }else{ ?>
 			<td align="center">
@@ -841,7 +728,7 @@ switch($action){
 				<?php echo findGrade($term_total_percent_mark); ?>
 			</td>
 			<td align="center">
-				<?php echo findPosition($numberArrayForTotalTerm, $term_total_weight);?>
+				<?php echo findPosition($numberArrayForCourse, $term_total_weight);?>
 			</td>
 <?php }//else ?>
 		</tr>
