@@ -1,0 +1,6 @@
+New Need to place in Live server
+
+UPDATE dscsc_marking_lock SET syndicate_id = 26 WHERE term_id = '86' AND course_id = '29' AND syndicate_id = '54'
+
+UPDATE dscsc_marking SET `status` = '1' WHERE course_id = '29' AND term_id = '86'
+AND ci_status = '0' AND syndicate_id = '26'

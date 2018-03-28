@@ -1,0 +1,58 @@
+<?php 
+class User{
+	private $userinfo;
+	private $timeout;
+	
+	function user(){
+		if(!empty($_SESSION['user'])){
+			if((time()-$_SESSION['start']) <  1800 ){ //Auto Session Timeout at 15 Minutes (900 Sec)
+				session_name("DSCSC");
+				$this->userinfo = $_SESSION['user'];
+				$_SESSION['start'] = time();
+				//$this->timeout = $_SESSION['start'];		
+			}else{
+				$this->userinfo = '';
+				$this->timeout = 0;
+			}	
+		}else{
+			$this->userinfo = '';
+			$this->timeout = 0;
+		}
+	}
+	
+	function setUser($user = ''){
+		global $dbObj;
+		$_SESSION['user'] = $user;
+		$this->userinfo = $_SESSION['user']; //set user info	
+		session_name("DSCSC");	//set session name
+		$_SESSION['start'] = time(); //set session timeout
+	}
+	
+	function getUser(){
+		global $dbObj;
+		if(session_name() != "DSCSC"){
+			$this->userinfo = '';
+		}
+		return $this->userinfo;
+	}
+
+	
+	function validUser($username='', $password='', $sec_key=''){
+		global $dbObj;
+		
+		//$sql = "select * from ".DB_PREFIX."user where username='".$username."'";
+		$sql = "select * from ".DB_PREFIX."user where username='".$username."' and password='".$password."' AND sec_key LIKE BINARY '".$sec_key."' ";
+		$userList = $dbObj->selectDataObj($sql);
+		
+		if(empty($userList)){
+			return false;
+		}else{
+			$this->setUser($userList);
+			return true;
+		}
+	}//function	 
+}
+global $user;
+$user = new User();
+
+?>

@@ -1,0 +1,17 @@
+<?php
+//define variable
+error_reporting(0);
+define('HOST_NAME', 'localhost');
+define('USER_NAME', 'root');
+define('PASSWORD', 'saadat');
+define('DB_PREFIX', 'dscsc_');
+define('DB_NAME', 'dscsc_assessment_nrw');
+
+$Config_host = 'localhost';
+$Config_user = 'root';
+$Config_password = 'saadat';
+$Config_db = 'dscsc_assessment';
+/*
+$dbtablehits= 'hits';
+$dbtableinfo= 'info';*/
+?>

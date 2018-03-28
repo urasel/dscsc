@@ -1,0 +1,131 @@
+#leftMenu{
+	width:200px;
+	height:auto;
+	float:left;
+	/*background-color:#CCCCCC;*/
+	text-align:left;
+	margin-left:10px;
+	margin-bottom:10px;
+	margin-top:10px;
+	padding:0px 0px 0px 0px;
+}
+
+ul#menu, ul#menu ul {
+	list-style-type:none;
+	width:210px;
+	margin: 0;
+	padding: 0;
+	background:url("../images/left_menu_bg.png") top left no-repeat;
+	-moz-border-radius:5px 5px 5px 5px;
+}
+
+ul#menu ul {
+	background-image:none;
+}
+
+ul#menu a {
+  display: block;
+  text-decoration: none;	
+}
+
+ul#menu li {
+  margin-top: 1px;
+  _margin-top:-12px;
+}
+
+ul#menu h3{
+	_padding-bottom:12px;
+}
+
+ul#menu li ul{
+	_padding-top:12px;
+}
+
+ul#menu li ol{
+	margin:0px;
+	padding:0px;
+}
+
+
+ul#menu li ol li{
+	list-style:none;
+	padding-left:0px;
+}
+
+
+ul#menu li a {
+	background: #333;
+	color: #565656;	
+	padding:5px 20px;
+	background:url("../images/menu_bg.gif") top left no-repeat;
+}
+
+ul#menu li.parent a {
+	background: #333;
+	color: #565656;	
+	padding:5px 20px;
+	background:url("../images/menu_bg_with_arrow.gif") top left no-repeat;
+}
+
+
+ul#menu li.active_menu a{
+	color: #ed1c24;
+ 	background:url("../images/menu_bg_hover.gif") top left no-repeat;
+	width:190px;
+}
+/*-------------adition */
+ul#menu li.active_menu.parent a{
+	color: #ed1c24;
+ 	background:url("../images/menu_bg_hover_with_arrow.gif") top left no-repeat;
+	width:190px;
+}
+
+/*-------------adition */
+ul#menu li.active_menu ul li a,
+ul#menu li.active_menu.parent ul li a{
+	padding:5px 25px;
+	background:url("../images/submenu_bg.gif") top left no-repeat;
+	color: #abaaaa;
+	padding-left: 25px;
+}
+
+ul#menu li a:hover{
+	color: #ed1c24;
+ 	background:url("../images/menu_bg_hover.gif") top left no-repeat;
+}
+
+ul#menu li.parent a:hover{
+	color: #ed1c24;
+ 	background:url("../images/menu_bg_hover_with_arrow.gif") top left no-repeat;
+}
+
+
+ul#menu li ul li a,
+ul#menu li.parent ul li a {
+	padding:5px 25px;
+	background:url("../images/submenu_bg.gif") top left no-repeat;
+	color: #abaaaa;
+	padding-left: 25px;
+}
+
+ul#menu li ul li a:hover,
+ul#menu li.parent ul li a:hover {
+	/*border-left: 5px #000 solid;*/
+	padding-left: 25px;
+	background: #ed1c24;
+ 	background:url("../images/submenu_bg_hover.gif") top left no-repeat;
+}
+
+ul#menu li ul li ol#level3 li a{
+	padding-left:35px;
+}
+
+ul#menu li ul li ol#level3 li a:hover{
+	padding-left:30px;
+}
+
+.code { border: 1px solid #ccc; list-style-type: decimal-leading-zero; padding: 5px; margin: 0; }
+.code code { display: block; padding: 3px; margin-bottom: 0; }
+.code li { background: #ddd; border: 1px solid #ccc; margin: 0 0 2px 2.2em; }
+.indent1 { padding-left: 1em; }
+.indent2 { padding-left: 2em; }
