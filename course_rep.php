@@ -175,6 +175,8 @@ switch($action){
 			
 			$ind = 0; 
 			// echo '<pre>';
+			
+			
 			foreach($mark_arr as $item){
 				$numberArrayForTermAggregateTemp[$ind] = $item->total + $impr_arr[$ind]->total;
 				$std_with_num[$item->student_id] = $item->total+ $impr_arr[$ind]->total;
@@ -234,11 +236,13 @@ require_once("templates/left_menu.php");
 		$sql = "SELECT mrk.student_id from ".DB_PREFIX."marking as mrk, ".DB_PREFIX."syndicate as syn WHERE mrk.course_id = '".$course_id."' AND mrk.term_id = '".$term_id."' AND mrk.status = '1' AND syn.id = mrk.syndicate_id group by mrk.student_id ORDER BY syn.name asc, mrk.student_id asc";
 		
 		$studentArrForArray = $dbObj->selectDataObj($sql);
-	
+		
+		
 		/* Aggregate Part Start*/
 																
 		$NewnumberArrayTotalTerm = '';												
 		$studentTotalTermMarkArray = '';
+		$std_with_num = '';
 		
 		foreach($studentArrForArray as $student){
 			$studentTotalTermMark = 0;
@@ -311,9 +315,18 @@ require_once("templates/left_menu.php");
 			
 			}//Foreach Term End
 			$studentTotalTermMarkArray[] = $studentTotalTermMark;
+			$std_with_num[$student->student_id] = $studentTotalTermMark;
 			
 		}
+		arsort($std_with_num);
 		
+		if($_POST['submit'] == 'Sort By Position'){
+			$in = 0;
+			foreach($std_with_num as $k => $v){
+				$studentArr[$in]->student_id = $k;
+				$in++;
+			}
+		}
 		
 		rsort($studentTotalTermMarkArray);
 		
@@ -1041,8 +1054,7 @@ require_once("templates/left_menu.php");
 								</td>
 								<td align="center">
 									<?php 
-									echo '<pre>';
-									print_r($numberArrayForCourse);
+									
 									echo findPosition($numberArrayForCourse, $student_total_weight);
 											$arr[$sl]['position'] = findPosition($numberArrayForCourse, $student_total_weight);
 									?>
