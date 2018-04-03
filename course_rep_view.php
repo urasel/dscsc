@@ -50,6 +50,30 @@ switch($action){
 			$courseArr = $dbObj->selectDataObj($sql);
 			$course = $courseArr[0];
 			$si_impr_mark = $course->si_impr_mark;
+			
+			
+			//New Array Create For Position Calculation Start
+			$allStudentNewWeightArraySql = "select * from ".DB_PREFIX."impression_marking WHERE course_id = '".$course_id."' AND term_id = '".$term->id."' AND status = '1'";
+			$stdTermArrAll = $dbObj->selectDataObj($allStudentNewWeightArraySql);
+			$numberArray = '';
+			if(!empty($stdTermArrAll)){
+				foreach($stdTermArrAll as $item){
+					//print_r($item);exit;
+					$numberArray[]= $total_exr_weight + $item->ds_impr_marking;
+				}//foreach
+			}
+			arsort($numberArray);
+			$numberArrayForCourse = '';
+			if(!empty($numberArray)){
+				$i = 0;
+				foreach($numberArray as $key => $val){
+					$numberArrayForCourse[$i]->total = $val;
+					$numberArrayForCourse[$i]->position = $i+1;
+					$i++; 
+				}//foreach
+			}
+			
+			
 		}else{
 		
 			$sql = "SELECT * FROM ".DB_PREFIX."term where id = '".$term_id."'";
@@ -136,46 +160,6 @@ switch($action){
 				$sql = "select distinct m.student_id from ".DB_PREFIX."marking as m, ".DB_PREFIX."student as s WHERE m.course_id = '".$course_id."' AND s.id = m.student_id ORDER BY s.student_id";
 				$studentArr = $dbObj->selectDataObj($sql);	
 			}
-		}//else 
-		
-		if(empty($term_id)){
-			//This code find position of a student in a course	
-			/*
-			$sql = " SELECT distinct total_weight as total from ".DB_PREFIX."si_impression_marking WHERE course_id = '".$course_id."' ORDER BY total desc";
-			$numberArrayForCourse = $dbObj->selectDataObj($sql);
-			
-			if(!empty($numberArrayForCourse)){
-				$i = 0;
-				foreach($numberArrayForCourse as $item){
-					$numberArrayForCourse[$i]->position = $i+1;
-					$i++; 
-				}//foreach
-			}//if
-			*/
-			
-			//New Array Create For Position Calculation Start
-			$allStudentNewWeightArraySql = "select * from ".DB_PREFIX."impression_marking WHERE course_id = '".$course_id."' AND term_id = '".$term->id."' AND status = '1'";
-			$stdTermArrAll = $dbObj->selectDataObj($allStudentNewWeightArraySql);
-			$numberArray = '';
-			if(!empty($stdTermArrAll)){
-				foreach($stdTermArrAll as $item){
-					//print_r($item);exit;
-					$numberArray[]= $total_exr_weight + $item->ds_impr_marking;
-				}//foreach
-			}
-			arsort($numberArray);
-			$numberArrayForCourse = '';
-			if(!empty($numberArray)){
-				$i = 0;
-				foreach($numberArray as $key => $val){
-					$numberArrayForCourse[$i]->total = $val;
-					$numberArrayForCourse[$i]->position = $i+1;
-					$i++; 
-				}//foreach
-			}
-			
-			
-		}else{
 			
 			//This code find position of a student in aggregate of term	
 			$sql = " SELECT distinct (SUM(mrk.ds_student_weight+mrk.si_student_weight+mrk.ci_student_weight)) as total, mrk.student_id from ".DB_PREFIX."marking as mrk WHERE mrk.course_id = '".$course_id."' AND (";			
@@ -229,7 +213,12 @@ switch($action){
 				$numberArrayForTermAggregate[$i] = $arr_obj;
 				$i++; 
 			}//foreach
-		}
+			
+			
+			
+		}//else 
+		
+		
 		$sql = " SELECT distinct total_weight as total from ".DB_PREFIX."si_impression_marking WHERE course_id = '".$course_id."' ORDER BY total desc";
 		$numberArrayForCourse = $dbObj->selectDataObj($sql);
 		
