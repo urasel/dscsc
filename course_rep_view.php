@@ -474,7 +474,7 @@ switch($action){
 ?>
 <link rel="shortcut icon" href="images/favicon.ico">
 <title><?php echo YARDSTICK.'Print Course Results'; ?></title>
-<body onLoad="javascript:this.print();" style="width:1000px; margin-left:auto; margin-right:auto; font-size:10px;">
+<body onLoad="javascript:this.print();" style="width:1000px; margin-left:30px; margin-right:auto; font-size:10px;">
 	<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
 		<tr align="center">
 			<td height="30"><strong><?php echo CONFIDENTIAL;?></strong></td>
