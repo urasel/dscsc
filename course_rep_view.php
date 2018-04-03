@@ -326,9 +326,17 @@ switch($action){
 			
 			}//Foreach Term End
 			$studentTotalTermMarkArray[] = $studentTotalTermMark;
-			
+			$std_with_num[$student->student_id] = $studentTotalTermMark;
 		}
+		arsort($std_with_num);
 		
+		if(!empty($std_with_num)){
+			$in = 0;
+			foreach($std_with_num as $k => $v){
+				$studentArr[$in]->student_id = $k;
+				$in++;
+			}
+		}
 		
 		rsort($studentTotalTermMarkArray);
 		
@@ -613,11 +621,12 @@ switch($action){
 			</td>
 			<?php }//if ?>
 		</tr>
-		<?php 
-		if(!empty($studentArr)){
-			$rownum = 0;
-			$sl = 0;
-			foreach($studentArr as $student){
+	<?php 
+	
+	if(!empty($studentArr)){
+		$rownum = 0;
+		$sl = 0;
+		foreach($studentArr as $student){
 				$sl = $rownum + 1;
 				if(($rownum%2)==0){//even
 					$class = ' class="even"';									
