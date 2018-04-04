@@ -590,6 +590,7 @@ switch($action){
 			<?php
 			$total_term_weight = 0;
 			foreach($termArr as $term){
+				/*
 				$sql = "select exr.weight from ".DB_PREFIX."exercise as exr,  ".DB_PREFIX."exercise_to_term as ett WHERE exr.course_id = '".$course_id."' AND ett.exercise_id = exr.id AND ett.term_id = '".$term->id."'";
 				$TexerciseArr = $dbObj->selectDataObj($sql);
 				$exercise_weight = 0;
@@ -600,6 +601,31 @@ switch($action){
 				$term_weight = $exercise_weight+$ds_impr_mark;
 				$total_term_weight += $term_weight;
 				$total_weight = $total_term_weight + $si_impr_mark;
+				*/
+				
+				$sql = "select * from ".DB_PREFIX."exercise as exr,  ".DB_PREFIX."exercise_to_term as ett WHERE ett.exercise_id = exr.id AND ett.term_id = '".$term->id."'";
+				$TexerciseArr = $dbObj->selectDataObj($sql);
+				$exercise_weight = 0;
+					foreach($TexerciseArr as $Texercise){
+						$joinExercise = $Texercise->join_course;
+						if($joinExercise == 1 && $cur_user_wing_id == 2){
+							$Texercise->weight = $Texercise->air_weight;
+						}else if($joinExercise == 1 && $cur_user_wing_id == 3){
+							$Texercise->weight = $Texercise->navy_weight;
+						}else if($joinExercise == 1 && $cur_user_wing_id == 1){
+							$Texercise->weight = $Texercise->weight;
+						}else{
+							$Texercise->weight = $Texercise->weight;
+						}
+						$exercise_weight += $Texercise->weight;
+					}
+				$ds_impr_mark = $term->ds_impr_mark;
+				$term_weight = $exercise_weight+$ds_impr_mark;
+				$total_term_weight += $term_weight;
+				$total_weight = $total_term_weight + $si_impr_mark;
+				
+				
+				
 			?>
 			<td align="center">
 				<strong><?php echo $term_weight; ?></strong>
@@ -674,6 +700,7 @@ switch($action){
 				
 				$totalExerciseArr = $dbObj->selectDataObj($sql);
 				
+				
 				$total_exr_weight = 0;
 				foreach($totalExerciseArr as $exercise){
 					//Find student's marks of this term
@@ -703,6 +730,7 @@ switch($action){
 					//$converted_exr_weight = $mark->ds_student_weight+$mark->si_student_weight+$mark->ci_student_weight;
 					$converted_exr_weight = $from_ds_weight+$mark->si_student_weight+$mark->ci_student_weight;
 					$total_exr_weight += $converted_exr_weight;
+					
 					//echo $total_exr_weight.'<br />';
 				}//foreach --- totalExerciseArr
 				
